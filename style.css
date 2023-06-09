@@ -1,0 +1,29 @@
+.catalog {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px #000 solid;
+    cursor: pointer;
+}
+
+.product{
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px #000 solid;
+}
+.product__colors{
+    margin-top: 10px;
+    display: flex;
+}
+.product__color{
+    width: 10px;
+    height: 10px;
+    border: 1px #000 solid;
+}
