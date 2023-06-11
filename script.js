@@ -8,7 +8,6 @@ const route = {
 const root = document.querySelector('#root')
 root.innerHTML = route["/"]
 
-// console.log(route[window.location.pathname])
 
 const onNavigate = (pathname) => {
     window.history.pushState(
@@ -19,16 +18,16 @@ const onNavigate = (pathname) => {
     root.innerHTML = route[pathname]
 }
 
+
 let catalogPage = document.querySelector('.catalog')
 
 catalogPage.addEventListener('click', () => {
     onNavigate('/product')
+    
     fetch('http://localhost:3000/product')
         .then(responce => responce.json()) 
         .then(json => {
-            // console.log(json.specifications[0].price.count)
             for(let i = 0; i <json.length; i++){
-                console.log(json[i].specifications[0].price.count)
                 new Product(
                     json[i].id,
                     json[i].specifications.map(e => {
@@ -38,69 +37,77 @@ catalogPage.addEventListener('click', () => {
                     json[i].specifications.map(e=>{
                         return e.price.count
                     }),
-                    root
+                    root,
+                    0
+                ).render() 
                 
-                ).render()
             }
-            
     })
-    // new Product(
-    //     1,
-    //     'M',
-    //     'Перчатки',
-    //     1000,
-    //     root
-    
-    // ).render()
     return false
 })
 
-
-
-// fetch('http://localhost:3000/product')
-//     .then(responce => responce.json()) 
-//     .then(json => console.log(json))
-
-
 class Product {
-    constructor(id, specifications, name, price, parentSelector){
+    constructor(id, specifications, name, price, parentSelector,count){
         this.id = id,
         this.specifications = specifications,
         this.name = name,
-        this.parent = parentSelector
-        this.price = price
+        this.parent = parentSelector,
+        this.price = price,
+        this.count = count
     }
     
     render(){
-        
-            
         const element = document.createElement('div')
-        element.innerHTML = `
+
+        element.innerHTML =`
             <div class="product">
                 <div class="product__price">${this.price}</div>
                 <div class="product__title">${this.name}</div>
                 <div class="product__specifications">${this.specifications}</div>
                 <div class="buttons">
-                    <button class="minus">-</button>
+                    <button onClick="${this.addNumbers(this.count)}" class="minus">-</button>
                     <button class="plus">+</button>
-                    
+                    <div>${this.count}</div>
                 </div>
             </div>   
-        `;
+        `
         this.parent.append(element)
     }
+
+    // a(){
+    //     return `console.log('+')`
+    // }
+    addNumbers(num){
+        fetch('http://localhost:3000/product')
+            .then(responce => responce.json())
+            .then(json => {
+                for(let i = 0; i<json.length; i++){
+                    json[i].specifications.map(e => {
+                        e.balance.map(e => {
+                            if(num < e.count){
+                                num++
+                            }
+                        })
+                    })
+                }
+            })
+    }
+    
+
 }
 
-// new Product(
-//     1,
-//     'M',
-//     'Перчатки',
-//     1000,
-//     '#root'
+// class Exp {
+//     constructor(button){
+//         this.button = button
+//     }
+//     render(){
+//         <button> click</button>
+//     }
+//     clickBtn(){
+//         console.log('+')
+//     }
+// }
 
-// ).render()
-
-// let model = 'db.json'
-// console.log(model)
-// let pr = new Product(model.product)
-// console.log(pr)
+// fetch('http://localhost:3000/product')
+//     .then(responce => responce.json()) 
+//     .then(json => console.log(json))
