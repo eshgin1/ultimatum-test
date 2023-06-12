@@ -40,7 +40,6 @@ catalogPage.addEventListener('click', () => {
                     root,
                     0
                 ).render() 
-                
             }
     })
     return false
@@ -52,10 +51,9 @@ class Product {
         this.specifications = specifications,
         this.name = name,
         this.parent = parentSelector,
-        this.price = price,
+        this.price = price
         this.count = count
     }
-    
     render(){
         const element = document.createElement('div')
 
@@ -65,30 +63,38 @@ class Product {
                 <div class="product__title">${this.name}</div>
                 <div class="product__specifications">${this.specifications}</div>
                 <div class="buttons">
-                    <button onClick="${this.addNumbers(this.count)}" class="minus">-</button>
+                    <button class="minus">-</button>
                     <button class="plus">+</button>
-                    <div>${this.count}</div>
+                    <div class="count">0</div>
                 </div>
             </div>   
         `
         this.parent.append(element)
+
+        const btnMinus = document.querySelectorAll('.minus')
+        const btnPlus = document.querySelector('.plus')
+        const counter = document.querySelectorAll('.count')
+        let count = this.count
+
+        btnMinus.forEach(e => {
+            e.addEventListener('click', () => {
+                this.countPlus(+1, count, counter)
+            })
+        })
     }
 
-    // a(){
-    //     return `console.log('+')`
-    // }
-    addNumbers(num){
+    countPlus(num, count, counter){
         fetch('http://localhost:3000/product')
             .then(responce => responce.json())
             .then(json => {
                 for(let i = 0; i<json.length; i++){
-                    json[i].specifications.map(e => {
-                        e.balance.map(e => {
-                            if(num < e.count){
-                                num++
-                            }
+                    console.log(json[i].specifications[i].balance[i].count)
+                    if(count <= json[i].specifications[i].balance[i].count){
+                        count += num;
+                        counter.forEach(e => {
+                            e.innerHTML = count
                         })
-                    })
+                    }
                 }
             })
     }
