@@ -22,35 +22,45 @@ const onNavigate = (pathname) => {
 
 let catalogPage = document.querySelector('.catalog')
 
+// const btn = document.createElement('button')
+
+
 catalogPage.addEventListener('click', () => {
     onNavigate('/product')
+    
+    function getObjWithJson(json){
+        let obj = {
+            
+        }
+        json.forEach(itemJson => {
+            obj.productId = itemJson.id
+            obj.productSpecification = itemJson.specifications.map(size => size.name)
+            obj.productName= itemJson.name
+            obj.productPric=  itemJson.specifications.map(price=> price.price.count)
+            obj.root= root
+            obj.count =  0
+            obj.btn = document.createElement('button')
+        })
+        
+        console.log(obj)
+        
+        return obj
+    }
     
     fetch('http://localhost:3000/product')
         .then(responce => responce.json()) 
         .then(json => {
-        
-            for(let i = 0; i <json.length; i++){
-                console.log(json[i])
-                const data = {
-                    productId: json[i].id,
-                    productSpecification: json[i].specifications.map(size => size.name),
-                    productName: json[i].name,
-                    productPrice: json[i].specifications.map(price=> price.price.count),
-                    root: root,
-                    count: 0,
-                    
-                }
-
-                // console.log(data.productName)
-
+            
+            json.forEach(e => {
                 new Product(
-                    data
+                    getObjWithJson(json), // data
                 ).render()
                 
-            }
+            })
+            
     })
+
     
-    return false
 })
 
 class Product {
@@ -60,13 +70,15 @@ class Product {
         this.name = data.productName,
         // this.parent = parentSelector,
         this.price = data.productName,
-        this.root = data.root
+        this.root = data.root,
         this.count = data.count
+        this.btn = data.btn
+        // console.log(this.btn)
     }
-
+    
     render(){
         const element = document.createElement('div')
-        
+        // const btn = document.createElement('button')
         element.innerHTML =`
             <div class="product">
                 <div class="product__price">${this.price}</div>
@@ -81,20 +93,20 @@ class Product {
         `
         this.root.append(element)
 
-        const btnMinus = document.querySelectorAll('.minus')
-        const counter = document.querySelectorAll('.count')
-        // let count = this.count
-
-        for(let i = 0; i< btnMinus.length; i++){
-            btnMinus[i].addEventListener('click', () => {
-                counter.forEach(e => {
-                    this.countPlus(+1, this.count, e)
-                    // e.innerHTML = this.count
-                })
-                
-            })
-        }
         
+        
+
+        // const btn = document.querySelector('.minus')
+        // console.log(btn)
+        // btn.addEventListener('click', () => console.log('+'))
+
+        const btnBox = document.querySelector('.buttons')
+        btnBox.append(this.btn)
+
+        // const btnBox = document.querySelector('.buttons')
+        // btnBox.append(this.btn)
+        // this.btn.addEventListener('click', () => console.log('+'))
+
     }
 
     countPlus(num, count, counter){
@@ -112,4 +124,6 @@ class Product {
                 }
             })
     }
+    
 }
+
