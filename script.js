@@ -23,28 +23,31 @@ let catalogPage = document.querySelector('.catalog')
 catalogPage.addEventListener('click', () => {
     onNavigate('/product')
     
-    function getObjWithJson(json){
+    function getObjWithJson(e){
         let obj = {
             
         }
-        json.forEach(itemJson => {
-            obj.productId = itemJson.id
-            obj.productSpecification = itemJson.specifications.map(size => size.name)
-            obj.productName= itemJson.name
-            obj.productPric=  itemJson.specifications.map(price=> price.price.count)
-            obj.root= root
-            obj.count = 1
-        })
-        
+
+        obj.productId = e.id
+        obj.productSpecification = e.specifications.map(size => size.name)
+        obj.productName= e.name
+        obj.productPric=  e.specifications.map(price=> price.price.count)
+        obj.root= root
+        obj.count = 0
+        obj.balance = e.specifications.map(e => e.balance.map(e => e.count))
+
         return obj
+        
     }
     
     fetch('http://localhost:3000/product')
         .then(responce => responce.json()) 
         .then(json => {
+            // console.log(json)
             json.forEach(e => {
+                
                 new Product(
-                    getObjWithJson(json), // data
+                    getObjWithJson(e), // data
                 ).render()
             })
     })
@@ -56,19 +59,16 @@ class Product {
         this.specifications = data.productSpecification,
         this.name = data.productName,
         // this.parent = parentSelector,
-        this.price = data.productName,
+        this.price = data.productPric,
         this.root = data.root,
-        this.count = data.count
-    }
+        this.count = data.count,
+        this.balance = data.balance
+    }   
+    
     
     render(){
         const element = document.createElement('div')
 
-        // cоздаем count
-        const countDiv = document.createElement('div')
-        countDiv.innerHTML = `<div class="count">0</div>`
-        const count = countDiv.querySelector('.count')
-        
         element.innerHTML =`
             <div class="product">
                 <div class="product__price">${this.price}</div>
@@ -83,45 +83,47 @@ class Product {
         
         // заапендили cозданные элементы в дом
         const btnWrap = element.querySelector('.buttons')
-        btnWrap.append(this.addBtnMinus())
-        btnWrap.append(this.addBtnPlus())
+        const counter = btnWrap.querySelector('.count') // достали counter
 
-        // this.addBtnMinus(btnWrap)
-        // this.addBtnPlus(btnWrap)
+        // console.log(counter)
+        this.addBtnMinus(btnWrap, counter)
+        this.addBtnPlus(btnWrap, counter)
+
+        
+
     }
 
-    addBtnMinus(btnWrap){
+    addBtnMinus(btnWrap, counter){
         const btnMinusDiv = document.createElement('div')      
         btnMinusDiv.innerHTML = `<button class="minus">-</button>` 
         const btnMinus = btnMinusDiv.querySelector('.minus')
-        // btnWrap.append(btnMinus)
-        btnMinus.addEventListener('click', () => console.log('-'))
+        btnWrap.append(btnMinus)
+        btnMinus.addEventListener('click', () => this.countMinus(-1, counter))
         return btnMinus
     }
-    addBtnPlus(btnWrap){
+    addBtnPlus(btnWrap, counter){
         const btnPlusDiv = document.createElement('div')
         btnPlusDiv.innerHTML = `<button class="plus">+</button>`
         const btnPlus = btnPlusDiv.querySelector('.plus')
-        // btnWrap.append(btnPlus)
-        btnPlus.addEventListener('click', () => console.log('+'))
+        btnWrap.append(btnPlus)
+        btnPlus.addEventListener('click', () => this.countPlus(+1, counter, this.balance[0][0]))
         return btnPlus
     }
 
-    // countPlus(num, count, counter){
-    //     fetch('http://localhost:3000/product')
-    //         .then(responce => responce.json())
-    //         .then(json => {
-    //             for(let i = 0; i<json.length; i++){
+    countPlus(num,counter, balance){
+        if(this.count < balance){
+            this.count += num;
+            counter.innerHTML = this.count;
+        }
+    }
 
-    //                 const productBalance = json[i].specifications[i].balance[i].count;
-    //                 console.log(productBalance)
-    //                 if(count <= productBalance){
-    //                     count += num;
-    //                     counter.innerHTML = count
-    //                 }
-    //             }
-    //         })
-    // }
+    countMinus(num, counter){
+        console.log(this.count)
+        if(this.count > 0){
+            this.count = this.count - 1
+            counter.innerHTML = this.count;
+        }
+    }
     
 }
 
