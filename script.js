@@ -33,7 +33,8 @@ catalogPage.addEventListener('click', () => {
         obj.root= root
         obj.count = 0
         obj.balance = e.specifications.map(e => e.balance.map(e => e.count))
-        obj.sale = e.specifications
+        obj.sale = e.specifications.map(e => e.sale) 
+        // console.log(obj.sale)
 
         return obj
         
@@ -65,15 +66,17 @@ class Product {
     
     
     render(){
-        console.log(this.balance)
+        // console.log(this.balance)
         const element = document.createElement('div')
-
+        
         element.innerHTML =`
             <div class="product">
-                <div class="product__price">${this.price}</div>
+                <div class="product__price"></div>
                 <div class="product__title">${this.name}</div>
                 <select></select>
                 <div class="buttons">
+                    <button class="plus">+</button>
+                    <button class="minus">-</button>
                     <div class="count">${this.count}</div>
                 </div>
                 <div class="sum"></div>
@@ -81,13 +84,15 @@ class Product {
         `
         this.root.append(element)
         
-        // заапендили cозданные элементы в дом
+        // достаем элементы и "dom"
         const btnWrap = element.querySelector('.buttons')
         const counter = btnWrap.querySelector('.count') // достали counter
+        const btnPlus = btnWrap.querySelector('.plus')
+        const btnMinus = btnWrap.querySelector('.minus')
 
         // 
-        this.addBtnMinus(btnWrap, counter)
-        this.addBtnPlus(btnWrap, counter)
+        // this.countPlus(btnPlus)
+        // this.countMinus(btnMinus)
 
         // достанем select и кладем в них option-ы с размерами 
         const selectSize = element.querySelector('select')
@@ -101,50 +106,72 @@ class Product {
         // отобразить сумму в зависимости от размера
         const priceDiv = element.querySelector('.product__price')
         const itemSize = selectSize.querySelectorAll('option')
-        priceDiv.innerHTML = this.price[0]
+        priceDiv.innerHTML = this.price[0] 
+        let currentBalance = this.balance[0][0]
+        let currentSale = 0 //текущая скидка
+
+        this.countPlus(btnPlus, +1, counter, currentBalance, )
+        this.countMinus(btnMinus, -1, counter, )
+        
 
         selectSize.addEventListener('change', (event) => {
             let arrSize = []
             itemSize.forEach(e => {
                 arrSize.push(e.innerHTML)
             })
-            
+
+            this.count = 0
+            counter.innerHTML = this.count
+
             for(let i = 0; i < this.price.length; i++){
+                currentBalance = this.balance[i][0]
+                
                 if(arrSize.indexOf(event.target.value) === i){
-                    priceDiv.innerHTML = this.price[i]
+
+                    priceDiv.innerHTML = this.price[i] 
+                    currentBalance = this.balance[i][0]
+
+                    this.countPlus(btnPlus, +1, counter, currentBalance)
+                    this.countMinus(btnMinus, -1, counter)
                 }
             }
         })
     }
 
-    addBtnMinus(btnWrap, counter){
-        const btnMinusDiv = document.createElement('div')      
-        btnMinusDiv.innerHTML = `<button class="minus">-</button>` 
-        const btnMinus = btnMinusDiv.querySelector('.minus')
-        btnWrap.append(btnMinus)
-        btnMinus.addEventListener('click', () => this.countMinus(-1, counter))
-        return btnMinus
+    countPlus(btnPlus, btnMinus,counter, balance, countStart){
+        // console.log(countStart)
+        // counter.innerHTML = this.count 
+        // let countStart = 0
+        // this.count = 0
+        // counter.innerHTML = this.count
+
+        console.log(this.balance)
+        
+        btnPlus.addEventListener('click', () => {
+            if(this.count < balance){
+                this.count  += 1;
+                counter.innerHTML = this.count ;   
+            }
+        })
     }
-    addBtnPlus(btnWrap, counter){
-        const btnPlusDiv = document.createElement('div')
-        btnPlusDiv.innerHTML = `<button class="plus">+</button>`
-        const btnPlus = btnPlusDiv.querySelector('.plus')
-        btnWrap.append(btnPlus)
-        btnPlus.addEventListener('click', () => this.countPlus(+1, counter, this.balance[0][0]))
-        return btnPlus
-    }
-    countPlus(num,counter, balance){
-        console.log(balance)
-        if(this.count < balance){
-            this.count += num;
-            counter.innerHTML = this.count;
-        }
-    }
-    countMinus(num, counter){
-        if(this.count > 0){
-            this.count = this.count - 1
-            counter.innerHTML = this.count;
-        }
+    countMinus(btnMinus, num, counter, countStart){
+
+        // btnMinus.addEventListener('click', () => {
+        //     if(this.count > 0){
+        //         this.count = this.count - 1
+        //         counter.innerHTML = this.count;
+        //     }
+        // })
+
+        btnMinus.addEventListener('click', () => {
+            if(this.count  > 0){
+                this.count  = this.count  - 1
+                counter.innerHTML = this.count ;
+            }
+            
+        })
+
+
     }
 }
 
