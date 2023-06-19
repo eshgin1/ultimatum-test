@@ -11,7 +11,7 @@
 
 .product{
     width: 450px;
-    height: 200px;
+    height: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -26,4 +26,12 @@
     width: 10px;
     height: 10px;
     border: 1px #000 solid;
+}
+.item-size{
+    border: 1px solid #d7d7d7;
+    background: #fff;
+    cursor: pointer;
+}
+.item-size:focus{
+    background: rgb(246, 76, 76);
 }

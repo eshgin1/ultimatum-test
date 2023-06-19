@@ -1,4 +1,3 @@
-
 const route = {
     '/': catalog,
     '/product': product
@@ -73,7 +72,9 @@ class Product {
             <div class="product">
                 <div class="product__price"></div>
                 <div class="product__title">${this.name}</div>
-                <select></select>
+                <select>
+                    <option>Размеры</option>
+                </select>
                 <div class="buttons">
                     <button class="plus">+</button>
                     <button class="minus">-</button>
@@ -86,71 +87,112 @@ class Product {
         
         // достаем элементы и "dom"
         const btnWrap = element.querySelector('.buttons')
-        const counter = btnWrap.querySelector('.count') // достали counter
-        const btnPlus = btnWrap.querySelector('.plus')
+        // const counter = btnWrap.querySelector('.count') // достали counter
+        // const btnPlus = btnWrap.querySelector('.plus')
         const btnMinus = btnWrap.querySelector('.minus')
-
+        let count = 0
         // 
-        // this.countPlus(btnPlus)
+        this.countPlus(btnWrap, element, count)
         // this.countMinus(btnMinus)
 
         // достанем select и кладем в них option-ы с размерами 
-        const selectSize = element.querySelector('select')
+        // const selectSize = element.querySelector('select')
 
-        for(let i = 0; i < this.specifications.length; i++){
+        // for(let i = 0; i < this.specifications.length; i++){
+        //     const itemSize = document.createElement('option')
+        //     itemSize.append(this.specifications[i])
+        //     selectSize.append(itemSize)
+        // }
+
+        // отобразить сумму в зависимости от размера
+        // const priceDiv = element.querySelector('.product__price')
+        // const itemSize = selectSize.querySelectorAll('option')
+        
+        // priceDiv.innerHTML = this.price[0] 
+        // let currentBalance = this.balance[0][0]
+        let currentSale = 0 //текущая скидка
+
+        // this.countPlus(btnPlus, +1, counter, currentBalance, )
+        // this.countMinus(btnMinus, -1, counter, )
+        
+
+        // selectSize.addEventListener('change', (event) => {
+        //     let arrSize = []
+        //     itemSize.forEach(e => {
+        //         arrSize.push(e.innerHTML)
+        //     })
+
+        //     this.count = 0
+        //     counter.innerHTML = this.count
+            
+        //     for(let i = 0; i < this.price.length; i++){
+               
+        //         currentBalance = this.balance[i][0]
+                
+        //         if(arrSize.indexOf(event.target.value) === i+1){
+
+        //             priceDiv.innerHTML = this.price[i] 
+        //             currentBalance = this.balance[i][0]
+
+        //             this.countPlus(btnPlus, +1, counter, currentBalance)
+        //             this.countMinus(btnMinus, -1, counter)
+        //         }
+        //         // if(event.target.value === 'Размеры'){
+        //         //     priceDiv.innerHTML = 0
+        //         // }
+        //     }
+        // })
+    }
+
+    countPlus(btnWrap, element, count){
+        const selectSize = element.querySelector('select') // достастали селекс
+        const counter = btnWrap.querySelector('.count') 
+        const btnPlus = btnWrap.querySelector('.plus')
+
+        for(let i = 0; i < this.specifications.length; i++){ // добавили элементы
             const itemSize = document.createElement('option')
             itemSize.append(this.specifications[i])
             selectSize.append(itemSize)
         }
 
-        // отобразить сумму в зависимости от размера
-        const priceDiv = element.querySelector('.product__price')
-        const itemSize = selectSize.querySelectorAll('option')
-        priceDiv.innerHTML = this.price[0] 
-        let currentBalance = this.balance[0][0]
-        let currentSale = 0 //текущая скидка
+        const priceDiv = element.querySelector('.product__price') // куда записываем итоговую сумму
+        const itemsSize = selectSize.querySelectorAll('option') // достали все размеры 
 
-        this.countPlus(btnPlus, +1, counter, currentBalance, )
-        this.countMinus(btnMinus, -1, counter, )
-        
+        priceDiv.innerHTML = 0 
+        // let currentBalance = this.balance[0][0] // текущий баланс на активном элементе
 
         selectSize.addEventListener('change', (event) => {
             let arrSize = []
-            itemSize.forEach(e => {
+            itemsSize.forEach(e => {
                 arrSize.push(e.innerHTML)
             })
 
-            this.count = 0
-            counter.innerHTML = this.count
+            // let count  = 0
+            // counter.innerHTML = 0
 
             for(let i = 0; i < this.price.length; i++){
-                currentBalance = this.balance[i][0]
                 
-                if(arrSize.indexOf(event.target.value) === i){
-
+                if(arrSize.indexOf(event.target.value) === i+1){
                     priceDiv.innerHTML = this.price[i] 
-                    currentBalance = this.balance[i][0]
+                    console.log(this.balance[i][0])
 
-                    this.countPlus(btnPlus, +1, counter, currentBalance)
-                    this.countMinus(btnMinus, -1, counter)
+                    btnPlus.addEventListener('click', () => {
+                        if(count < this.balance[i][0]){
+                            count += 1
+                            counter.innerHTML = count ; 
+                            console.log(count)
+                            // console.log('+')
+                        }
+                        // if(this.count < this.balance[i][0]){
+                        //     this.count  += 1;
+                        //     counter.innerHTML = this.count ;   
+                        // }
+                    })
+    
+                } else if(event.target.value === 'Размеры'){
+                    priceDiv.innerHTML = 0
                 }
-            }
-        })
-    }
-
-    countPlus(btnPlus, btnMinus,counter, balance, countStart){
-        // console.log(countStart)
-        // counter.innerHTML = this.count 
-        // let countStart = 0
-        // this.count = 0
-        // counter.innerHTML = this.count
-
-        console.log(this.balance)
-        
-        btnPlus.addEventListener('click', () => {
-            if(this.count < balance){
-                this.count  += 1;
-                counter.innerHTML = this.count ;   
+                
             }
         })
     }
@@ -174,4 +216,3 @@ class Product {
 
     }
 }
-
