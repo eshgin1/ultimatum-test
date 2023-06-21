@@ -33,7 +33,7 @@ catalogPage.addEventListener('click', () => {
         obj.count = 0
         obj.balance = e.specifications.map(e => e.balance.map(e => e.count))
         obj.sale = e.specifications.map(e => e.sale) 
-
+        console.log(obj.sale)
         return obj
         
     }
@@ -59,7 +59,8 @@ class Product {
         this.price = data.productPric,
         this.root = data.root,
         this.count = data.count,
-        this.balance = data.balance
+        this.balance = data.balance,
+        this.sale = data.sale
     }   
     
     
@@ -69,6 +70,7 @@ class Product {
         element.innerHTML =`
             <div class="product">
                 <div class="product__price"></div>
+                <div class="product__price-sale"></div>
                 <div class="product__title">${this.name}</div>
                 <select>
                     <option>Размеры</option>
@@ -77,15 +79,16 @@ class Product {
                     <button class="plus">+</button>
                     <button class="minus">-</button>
                     <div class="count">${this.count}</div>
+                    <h3>Под заказ</h3>
+                    <input type="checkbox">
                 </div>
-                <div class="sum"></div>
             </div>   
         `
         this.root.append(element)
         
         // достаем элементы из "dom"
         const btnWrap = element.querySelector('.buttons')
-        const btnMinus = btnWrap.querySelector('.minus')
+        // const btnMinus = btnWrap.querySelector('.minus')
         let count = [0, 0, 0, 0, 0] 
         
         // 
@@ -96,6 +99,9 @@ class Product {
         const selectSize = element.querySelector('select') 
         const counter = btnWrap.querySelector('.count') 
         const btnPlus = btnWrap.querySelector('.plus')
+        const btnMinus = btnWrap.querySelector('.minus')
+        // const inputOrder = btnWrap.querySelector('input')
+        // console.log(inputOrder.checked)
 
         for(let i = 0; i < this.specifications.length; i++){ 
             const itemSize = document.createElement('option')
@@ -119,12 +125,17 @@ class Product {
                 if(arrSize.indexOf(event.target.value) === i+1){
                     priceDiv.innerHTML = 0
                     counter.innerHTML = 0
+                    console.log(this.sale[i])
                     btnPlus.addEventListener('click', () => {
-                        if(count[i] < this.balance[i][0]){
+                        
+                        if(count[i] < this.balance[i][0] && this.sale[i] > 0){
+                            count[i] += 1
+                            counter.innerHTML = count[i] 
+                            priceDiv.innerHTML = this.price[i] * count[i] - (this.price[i] * count[i] * this.sale[i] / 100)
+                        } else if (count[i] < this.balance[i][0] && this.sale[i] === 0){
                             count[i] += 1
                             counter.innerHTML = count[i] ; 
-                            console.log(count)
-                            priceDiv.innerHTML = this.price[i] * count[i]
+                            priceDiv.innerHTML = this.price[i] * count[i] 
                         }
                     })
     
@@ -151,7 +162,5 @@ class Product {
         //     }
             
         // })
-
-
     // }
 }
